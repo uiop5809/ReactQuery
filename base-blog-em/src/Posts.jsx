@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useQuery } from "react-query";
+import { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "react-query";
 import { PostDetail } from "./PostDetail";
 
 const maxPostPage = 10;
@@ -15,12 +15,26 @@ export function Posts() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedPost, setSelectedPost] = useState(null);
 
+  // 쿼리 클라이언트를 가져오면 prefetchQuery 메서드 사용 가능
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (currentPage < maxPostPage) {
+      const nextPage = currentPage + 1;
+      // 다음 페이지 쿼리를 미리 실행하고 캐시에 저장
+      queryClient.prefetchQuery(["posts", nextPage], () =>
+        fetchPosts(nextPage)
+      );
+    }
+  }, [currentPage, queryClient]);
+
   // 쿼리 키, 쿼리 함수, 옵션
   const { data, isError, error, isLoading } = useQuery(
     ["posts", currentPage],
     () => fetchPosts(currentPage),
     {
       staleTime: 2000, // 2초마다 만료
+      keepPreviousData: true, // 쿼리 키가 바뀔 때도 지난 데이터를 유지해서 캐시에 해당 데이터 있도록
     }
   );
 
