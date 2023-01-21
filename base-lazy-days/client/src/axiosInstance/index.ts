@@ -3,7 +3,11 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { User } from '../../../shared/types';
 import { baseUrl } from './constants';
 
-export function getJWTHeader(user: User): Record<string, string> {
+interface jwtHeader {
+  Authorization?: string;
+}
+
+export function getJWTHeader(user: User): jwtHeader {
   return { Authorization: `Bearer ${user.token}` };
 }
 
