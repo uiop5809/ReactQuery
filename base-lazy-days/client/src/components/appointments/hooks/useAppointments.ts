@@ -10,6 +10,12 @@ import { getAvailableAppointments } from "../utils";
 import { getMonthYearDetails, getNewMonthYear, MonthYear } from "./monthYear";
 import { useEffect } from "react";
 
+// useQuery and prefetchQuery
+const commonOptions = {
+  staleTime: 0,
+  cacheTime: 3 * 10000, // 5 minutes
+};
+
 async function getAppointments(
   year: string,
   month: string
@@ -47,7 +53,8 @@ export function useAppointments(): UseAppointments {
     const nextMonthYear = getNewMonthYear(monthYear, 1);
     queryClient.prefetchQuery(
       [queryKeys.appointments, nextMonthYear.year, nextMonthYear.month],
-      () => getAppointements(nextMonthYear.year, nextMonthYear.month)
+      () => getAppointements(nextMonthYear.year, nextMonthYear.month),
+      commonOptions
     );
   }, [queryClient, monthYear]);
 
@@ -58,6 +65,10 @@ export function useAppointments(): UseAppointments {
     () => getAppointments(monthYear.year, monthYear.month),
     {
       select: showAll ? undefined : selectFn,
+      ...commonOptions,
+      refetchOnMount: true,
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
     }
   );
 
