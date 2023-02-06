@@ -7,7 +7,6 @@ import { BackgroundImage } from "../common/BackgroundImage";
 
 export function Home(): ReactElement {
   usePrefetchTreatments();
-
   return (
     <Stack textAlign="center" justify="center" height="84vh">
       <BackgroundImage />
